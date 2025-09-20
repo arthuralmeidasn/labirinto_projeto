@@ -4,6 +4,7 @@ public class Stack<T> {
     private final T[] data;
     private int top = -1;
 
+    @SuppressWarnings("unchecked")
     public Stack(int capacity) {
         this.data = (T[]) new Object[capacity];
     }
