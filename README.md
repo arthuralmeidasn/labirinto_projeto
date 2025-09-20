@@ -25,14 +25,14 @@ java -cp bin app.Game --map=<caminho_do_mapa> --player=<nome_do_jogador> --seed=
 
 **Exemplo de Uso:**
 ```bash
-java -cp bin app.Game --map=mapas/map1.txt --player="Thiago" --seed=42
+java -cp bin app.Game --map=mapas/map1.txt --player="Cleiton" --seed=42
 ```
 
-* [cite_start]`--map` (obrigatório): Caminho para o arquivo de mapa. [cite: 14]
-* [cite_start]`--player` (opcional): Nome do jogador para o ranking. [cite: 15]
-* [cite_start]`--seed` (opcional): Semente para geração de valores dos tesouros. [cite: 14]
+* `--map` (obrigatório): Caminho para o arquivo de mapa.
+* `--player` (opcional): Nome do jogador para o ranking.
+* `--seed` (opcional): Semente para geração de valores dos tesouros.
 
 ## Autores
 
-* Arthur De Almeiad
-* Ali
+* Arthur De Almeiada
+* Ali Ahmad
