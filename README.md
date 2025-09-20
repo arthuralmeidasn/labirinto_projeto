@@ -1,18 +1,38 @@
-## Getting Started
+# Projeto de Estrutura de Dados: Labirinto LIFO – Chaves & Portas
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+## Como Compilar e Executar
 
-## Folder Structure
+### Pré-requisitos
 
-The workspace contains two folders by default, where:
+É necessário ter o Java Development Kit (JDK) instalado e configurado no seu sistema (versão 11 ou superior).
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+### 1. Compilação
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+Abra um terminal na pasta raiz do projeto e execute o seguinte comando para compilar todo o código-fonte. O comando irá colocar os arquivos `.class` compilados na pasta `bin/`.
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+```bash
+javac -d bin/ src/app/*.java src/core/*.java src/ds/*.java src/io/*.java src/model/*.java src/util/*.java
+```
 
-## Dependency Management
+### 2. Execução
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+Após a compilação, execute o jogo a partir da pasta raiz usando o comando `java`. É necessário usar a flag `-cp bin` para que o Java encontre as classes compiladas.
+
+**Sintaxe:**
+```bash
+java -cp bin app.Game --map=<caminho_do_mapa> --player=<nome_do_jogador> --seed=<numero>
+```
+
+**Exemplo de Uso:**
+```bash
+java -cp bin app.Game --map=mapas/map1.txt --player="Thiago" --seed=42
+```
+
+* [cite_start]`--map` (obrigatório): Caminho para o arquivo de mapa. [cite: 14]
+* [cite_start]`--player` (opcional): Nome do jogador para o ranking. [cite: 15]
+* [cite_start]`--seed` (opcional): Semente para geração de valores dos tesouros. [cite: 14]
+
+## Autores
+
+* Arthur De Almeiad
+* Ali

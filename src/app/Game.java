@@ -58,20 +58,12 @@ public class Game {
                 }
 
                 switch (command) {
-                    case 'W':
-                        nextRow--;
-                        break;
-                    case 'A':
-                        nextCol--;
-                        break;
-                    case 'S':
-                        nextRow++;
-                        break;
-                    case 'D':
-                        nextCol++;
-                        break;
+                    case 'W':nextRow--;break;
+                    case 'A':nextCol--;break;
+                    case 'S':nextRow++;break;
+                    case 'D':nextCol++;break;
                     default:
-                        continue;
+                    continue;
                 }
 
                 if (nextRow >= 0 && nextRow < dadosDoMapa.rows() &&
@@ -83,7 +75,7 @@ public class Game {
 
                     if (nextTile == '#') {
                         canMove = false;
-                    } else if (Character.isUpperCase(nextTile)) {
+                    } else if (Character.isUpperCase(nextTile) && nextTile != 'T' && nextTile != 'E') {
                         if (!inventario.isEmpty() && inventario.peek() == Character.toLowerCase(nextTile)) {
                             inventario.pop();
                             score += 15;
@@ -141,7 +133,7 @@ public class Game {
 
         System.out.print("Pontos: " + score);
 
-        System.out.println(" | Pilha de chaves: " + (inventario.isEmpty() ? "[Vazia]" : "[" + inventario.peek() + "]"));
+        System.out.println(" | Pilha de chaves: " + (inventario.isEmpty() ? "[]" : "[" + inventario.peek() + "]"));
 
         System.out.println("--------------------------------------------------");
     }
