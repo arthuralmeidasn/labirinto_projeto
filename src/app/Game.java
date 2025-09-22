@@ -17,163 +17,159 @@ public class Game {
         int score = 0;
         boolean gameIsRunning = true;
 
-        Scanner scannerNome = new Scanner(System.in);
-        System.out.print("Bem-vindo ao Labirinto LIFO! Digite seu nome: ");
-        String nomeDoJogador = scannerNome.nextLine();
+        try (Scanner scannerNome = new Scanner(System.in)) {
 
-        try {
-            MapData dadosDoMapa = MapLoader.load("mapa_teste.txt");
+            System.out.print("Bem-vindo ao Labirinto LIFO! Digite seu nome: ");
+            String nomeDoJogador = scannerNome.nextLine();
 
-            for (int i = 0; i < dadosDoMapa.rows(); i++) {
-                for (int j = 0; j < dadosDoMapa.cols(); j++) {
-                    if (dadosDoMapa.map()[i][j] == 'S') {
-                        playerRow = i;
-                        playerCol = j;
+            try {
+                MapData dadosDoMapa = MapLoader.load("mapa_teste.txt");
+
+                for (int i = 0; i < dadosDoMapa.rows(); i++) {
+                    for (int j = 0; j < dadosDoMapa.cols(); j++) {
+                        if (dadosDoMapa.map()[i][j] == 'S') {
+                            playerRow = i;
+                            playerCol = j;
+                            break;
+                        }
+                    }
+                    if (playerRow != -1) {
                         break;
                     }
                 }
-                if (playerRow != -1) {
-                    break;
-                }
-            }
 
-            if (playerRow == -1) {
-                System.out.println("Erro: Posição inicial 'S' não encontrada no mapa!");
-                return;
-            }
-
-            Scanner scanner = new Scanner(System.in);
-            Stack<Character> inventario = new Stack<>(dadosDoMapa.stackCapacity());
-
-            while (gameIsRunning) {
-                clearConsole();
-                renderMap(dadosDoMapa.map(), dadosDoMapa.rows(), dadosDoMapa.cols());
-                renderStatus(score, inventario); // Mostra o status do jogador
-
-                System.out.print("Digite seu movimento (W/A/S/D) ou Q para sair: ");
-                String input = scanner.nextLine().toUpperCase();
-                if (input.isEmpty())
-                    continue;
-
-                char command = input.charAt(0);
-
-                if (command == 'Q') {
-                    gameIsRunning = false;
-                    continue;
+                if (playerRow == -1) {
+                    System.out.println("Erro: Posição inicial 'S' não encontrada no mapa!");
+                    return;
                 }
 
-                int nextRow = playerRow;
-                int nextCol = playerCol;
+                Scanner scanner = new Scanner(System.in);
+                Stack<Character> inventario = new Stack<>(dadosDoMapa.stackCapacity());
 
-                switch (command) {
-                    case 'W':
-                        nextRow--;
-                        break;
-                    case 'A':
-                        nextCol--;
-                        break;
-                    case 'S':
-                        nextRow++;
-                        break;
-                    case 'D':
-                        nextCol++;
-                        break;
-                    default:
+                while (gameIsRunning) {
+                    clearConsole();
+                    renderMap(dadosDoMapa.map(), dadosDoMapa.rows(), dadosDoMapa.cols());
+                    renderStatus(score, inventario); // Mostra o status do jogador
+
+                    System.out.print("Digite seu movimento (W/A/S/D) ou Q para sair: ");
+                    String input = scanner.nextLine().toUpperCase();
+                    if (input.isEmpty())
                         continue;
-                }
 
-                if (nextRow >= 0 && nextRow < dadosDoMapa.rows() &&
-                        nextCol >= 0 && nextCol < dadosDoMapa.cols()) {
+                    char command = input.charAt(0);
 
-                    char nextTile = dadosDoMapa.map()[nextRow][nextCol];
+                    if (command == 'Q') {
+                        gameIsRunning = false;
+                        continue;
+                    }
 
-                    boolean canMove = false;
+                    int nextRow = playerRow;
+                    int nextCol = playerCol;
 
-                    if (nextTile == '#') {
-                        canMove = false;
-                    } else if (Character.isUpperCase(nextTile) && nextTile != 'T' && nextTile != 'E') {
-                        if (!inventario.isEmpty() && inventario.peek() == Character.toLowerCase(nextTile)) {
-                            inventario.pop();
-                            score += 15;
-                            canMove = true;
-                        } else {
+                    switch (command) {
+                        case 'W':nextRow--;break;
+                        case 'A':nextCol--;break;
+                        case 'S':nextRow++;break;
+                        case 'D':nextCol++;break;
+                        default:continue;
+                    }
+
+                    if (nextRow >= 0 && nextRow < dadosDoMapa.rows() &&
+                            nextCol >= 0 && nextCol < dadosDoMapa.cols()) {
+
+                        char nextTile = dadosDoMapa.map()[nextRow][nextCol];
+
+                        boolean canMove = false;
+
+                        if (nextTile == '#') {
                             canMove = false;
-                        }
-                    } else {
-                        canMove = true;
-                    }
-
-                    if (canMove) {
-                        dadosDoMapa.map()[playerRow][playerCol] = '.';
-
-                        playerRow = nextRow;
-                        playerCol = nextCol;
-
-                        char currentTile = dadosDoMapa.map()[playerRow][playerCol];
-                        if (Character.isLowerCase(currentTile)) {
-                            inventario.push(currentTile);
-                        } else if (currentTile == '$') {
-                            score += 25;
-                        } else if (currentTile == 'T') {
-                            score -= 20;
-                        } else if (currentTile == 'E') {
-                            score += 100;
-                            gameIsRunning = false;
+                        } else if (Character.isUpperCase(nextTile) && nextTile != 'T' && nextTile != 'E') {
+                            if (!inventario.isEmpty() && inventario.peek() == Character.toLowerCase(nextTile)) {
+                                inventario.pop();
+                                score += 15;
+                                canMove = true;
+                            } else {
+                                canMove = false;
+                            }
+                        } else {
+                            canMove = true;
                         }
 
-                        if (gameIsRunning) {
-                            dadosDoMapa.map()[playerRow][playerCol] = 'S';
+                        if (canMove) {
+                            dadosDoMapa.map()[playerRow][playerCol] = '.';
+
+                            playerRow = nextRow;
+                            playerCol = nextCol;
+
+                            char currentTile = dadosDoMapa.map()[playerRow][playerCol];
+                            if (Character.isLowerCase(currentTile)) {
+                                inventario.push(currentTile);
+                            } else if (currentTile == '$') {
+                                score += 25;
+                            } else if (currentTile == 'T') {
+                                score -= 20;
+                            } else if (currentTile == 'E') {
+                                score += 100;
+                                gameIsRunning = false;
+                            }
+
+                            if (gameIsRunning) {
+                                dadosDoMapa.map()[playerRow][playerCol] = 'S';
+                            }
                         }
                     }
                 }
-            }
 
-            ScoreEntry pontuacaoFinal = new ScoreEntry(nomeDoJogador, score);
-            System.out.println("\nParabéns, " + pontuacaoFinal.getNome() + "! Sua pontuação final foi: "+ pontuacaoFinal.getPontos());
+                ScoreEntry pontuacaoFinal = new ScoreEntry(nomeDoJogador, score);
+                System.out.println("\nParabéns, " + pontuacaoFinal.getNome() + "! Sua pontuação final foi: "
+                        + pontuacaoFinal.getPontos());
 
-            System.out.println("Salvando sua pontuação no ranking...");
-            ScoreBoard.salvarPontuacao(pontuacaoFinal);
+                System.out.println("Salvando sua pontuação no ranking...");
+                ScoreBoard.salvarPontuacao(pontuacaoFinal);
 
-            ScoreEntry[] ranking = ScoreBoard.carregarPontuacoes();
+                ScoreEntry[] ranking = ScoreBoard.carregarPontuacoes();
 
-            if (ranking.length > 1) {
-                Sorts.ordenarRapido(ranking, 0, ranking.length - 1);
-            }
-
-            // 5. Exibir os 10 melhores do ranking
-            System.out.println("\n--- TOP 10 RANKING ---");
-            int limite = Math.min(ranking.length, 10);
-            for (int i = 0; i < limite; i++) {
-                System.out.println((i + 1) + ". " + ranking[i].getNome() + " - " + ranking[i].getPontos() + " pontos");
-            }
-            System.out.println("----------------------");
-
-            while (true) {
-                System.out.print("\nDigite um nome para buscar no ranking (ou 'sair' para terminar): ");
-                String nomeBusca = scanner.nextLine();
-                if (nomeBusca.equalsIgnoreCase("sair")) {
-                    break;
+                if (ranking.length > 1) {
+                    Sorts.ordenarRapido(ranking, 0, ranking.length - 1);
                 }
 
-                boolean encontrado = false;
-                for (ScoreEntry entry : ranking) {
-                    if (entry.getNome().equalsIgnoreCase(nomeBusca)) {
-                        System.out.println(">> Resultado: " + entry.getNome() + " - " + entry.getPontos() + " pontos.");
-                        encontrado = true;
+                // 5. Exibir os 10 melhores do ranking
+                System.out.println("\n--- TOP 10 RANKING ---");
+                int limite = Math.min(ranking.length, 10);
+                for (int i = 0; i < limite; i++) {
+                    System.out.println(
+                            (i + 1) + ". " + ranking[i].getNome() + " - " + ranking[i].getPontos() + " pontos");
+                }
+                System.out.println("----------------------");
+
+                while (true) {
+                    System.out.print("\nDigite um nome para buscar no ranking (ou 'sair' para terminar): ");
+                    String nomeBusca = scanner.nextLine();
+                    if (nomeBusca.equalsIgnoreCase("sair")) {
                         break;
                     }
+
+                    boolean encontrado = false;
+                    for (ScoreEntry entry : ranking) {
+                        if (entry.getNome().equalsIgnoreCase(nomeBusca)) {
+                            System.out.println(
+                                    ">> Resultado: " + entry.getNome() + " - " + entry.getPontos() + " pontos.");
+                            encontrado = true;
+                            break;
+                        }
+                    }
+                    if (!encontrado) {
+                        System.out.println(">> Jogador '" + nomeBusca + "' não encontrado no ranking.");
+                    }
                 }
-                if (!encontrado) {
-                    System.out.println(">> Jogador '" + nomeBusca + "' não encontrado no ranking.");
-                }
+
+                scanner.close();
+                scannerNome.close();
+                System.out.println("\nObrigado por jogar!");
+
+            } catch (FileNotFoundException e) {
+                System.err.println("ERRO CRÍTICO: Arquivo do mapa não foi encontrado!");
             }
-
-            scanner.close();
-            scannerNome.close();
-            System.out.println("\nObrigado por jogar!");
-
-        } catch (FileNotFoundException e) {
-            System.err.println("ERRO CRÍTICO: Arquivo do mapa não foi encontrado!");
         }
     }
 
