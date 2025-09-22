@@ -5,6 +5,9 @@ import ds.Stack;
 import io.MapLoader;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import model.ScoreEntry;
+import model.ScoreBoard;
+import util.Sorts;
 
 public class Game {
 
@@ -13,6 +16,10 @@ public class Game {
         int playerCol = -1;
         int score = 0;
         boolean gameIsRunning = true;
+
+        Scanner scannerNome = new Scanner(System.in);
+        System.out.print("Bem-vindo ao Labirinto LIFO! Digite seu nome: ");
+        String nomeDoJogador = scannerNome.nextLine();
 
         try {
             MapData dadosDoMapa = MapLoader.load("mapa_teste.txt");
@@ -59,11 +66,20 @@ public class Game {
                 int nextCol = playerCol;
 
                 switch (command) {
-                    case 'W':nextRow--;break;
-                    case 'A':nextCol--;break;
-                    case 'S':nextRow++;break;
-                    case 'D':nextCol++;break;
-                    default: continue;
+                    case 'W':
+                        nextRow--;
+                        break;
+                    case 'A':
+                        nextCol--;
+                        break;
+                    case 'S':
+                        nextRow++;
+                        break;
+                    case 'D':
+                        nextCol++;
+                        break;
+                    default:
+                        continue;
                 }
 
                 if (nextRow >= 0 && nextRow < dadosDoMapa.rows() &&
@@ -100,9 +116,8 @@ public class Game {
                             score += 25;
                         } else if (currentTile == 'T') {
                             score -= 20;
-                        } // Pontos por cair em armadilha
-                        else if (currentTile == 'E') {
-                            score += 100; // Pontos por sair
+                        } else if (currentTile == 'E') {
+                            score += 100;
                             gameIsRunning = false;
                         }
 
@@ -113,8 +128,49 @@ public class Game {
                 }
             }
 
+            ScoreEntry pontuacaoFinal = new ScoreEntry(nomeDoJogador, score);
+            System.out.println("\nParabéns, " + pontuacaoFinal.getNome() + "! Sua pontuação final foi: "+ pontuacaoFinal.getPontos());
+
+            System.out.println("Salvando sua pontuação no ranking...");
+            ScoreBoard.salvarPontuacao(pontuacaoFinal);
+
+            ScoreEntry[] ranking = ScoreBoard.carregarPontuacoes();
+
+            if (ranking.length > 1) {
+                Sorts.ordenarRapido(ranking, 0, ranking.length - 1);
+            }
+
+            // 5. Exibir os 10 melhores do ranking
+            System.out.println("\n--- TOP 10 RANKING ---");
+            int limite = Math.min(ranking.length, 10);
+            for (int i = 0; i < limite; i++) {
+                System.out.println((i + 1) + ". " + ranking[i].getNome() + " - " + ranking[i].getPontos() + " pontos");
+            }
+            System.out.println("----------------------");
+
+            while (true) {
+                System.out.print("\nDigite um nome para buscar no ranking (ou 'sair' para terminar): ");
+                String nomeBusca = scanner.nextLine();
+                if (nomeBusca.equalsIgnoreCase("sair")) {
+                    break;
+                }
+
+                boolean encontrado = false;
+                for (ScoreEntry entry : ranking) {
+                    if (entry.getNome().equalsIgnoreCase(nomeBusca)) {
+                        System.out.println(">> Resultado: " + entry.getNome() + " - " + entry.getPontos() + " pontos.");
+                        encontrado = true;
+                        break;
+                    }
+                }
+                if (!encontrado) {
+                    System.out.println(">> Jogador '" + nomeBusca + "' não encontrado no ranking.");
+                }
+            }
+
             scanner.close();
-            System.out.println("\nFim de jogo! Obrigado por jogar.");
+            scannerNome.close();
+            System.out.println("\nObrigado por jogar!");
 
         } catch (FileNotFoundException e) {
             System.err.println("ERRO CRÍTICO: Arquivo do mapa não foi encontrado!");
