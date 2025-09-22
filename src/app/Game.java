@@ -13,8 +13,6 @@ public class Game {
         int playerCol = -1;
         int score = 0;
         boolean gameIsRunning = true;
-        int nextRow = playerRow;
-        int nextCol = playerCol;
 
         try {
             MapData dadosDoMapa = MapLoader.load("mapa_teste.txt");
@@ -43,7 +41,7 @@ public class Game {
             while (gameIsRunning) {
                 clearConsole();
                 renderMap(dadosDoMapa.map(), dadosDoMapa.rows(), dadosDoMapa.cols());
-                renderStatus(score, inventario);
+                renderStatus(score, inventario); // Mostra o status do jogador
 
                 System.out.print("Digite seu movimento (W/A/S/D) ou Q para sair: ");
                 String input = scanner.nextLine().toUpperCase();
@@ -57,13 +55,15 @@ public class Game {
                     continue;
                 }
 
+                int nextRow = playerRow;
+                int nextCol = playerCol;
+
                 switch (command) {
                     case 'W':nextRow--;break;
                     case 'A':nextCol--;break;
                     case 'S':nextRow++;break;
                     case 'D':nextCol++;break;
-                    default:
-                    continue;
+                    default: continue;
                 }
 
                 if (nextRow >= 0 && nextRow < dadosDoMapa.rows() &&
@@ -94,19 +94,21 @@ public class Game {
                         playerCol = nextCol;
 
                         char currentTile = dadosDoMapa.map()[playerRow][playerCol];
-
                         if (Character.isLowerCase(currentTile)) {
                             inventario.push(currentTile);
                         } else if (currentTile == '$') {
                             score += 25;
                         } else if (currentTile == 'T') {
                             score -= 20;
-                        } else if (currentTile == 'E') {
-                            score += 100;
+                        } // Pontos por cair em armadilha
+                        else if (currentTile == 'E') {
+                            score += 100; // Pontos por sair
                             gameIsRunning = false;
                         }
 
-                        dadosDoMapa.map()[playerRow][playerCol] = 'S';
+                        if (gameIsRunning) {
+                            dadosDoMapa.map()[playerRow][playerCol] = 'S';
+                        }
                     }
                 }
             }
