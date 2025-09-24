@@ -1,10 +1,12 @@
 package app;
 
 import core.MapData;
+import ds.SinglyLinkedList;
 import ds.Stack;
 import io.MapLoader;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.Random;
 import model.ScoreEntry;
 import model.ScoreBoard;
 import util.Sorts;
@@ -16,6 +18,7 @@ public class Game {
         int playerCol = -1;
         int score = 0;
         boolean gameIsRunning = true;
+        long seed = 42;
 
         try (Scanner scannerNome = new Scanner(System.in)) {
 
@@ -45,6 +48,7 @@ public class Game {
 
                 Scanner scanner = new Scanner(System.in);
                 Stack<Character> inventario = new Stack<>(dadosDoMapa.stackCapacity());
+                SinglyLinkedList<String> trapLog = new SinglyLinkedList<>();
 
                 while (gameIsRunning) {
                     clearConsole();
@@ -96,18 +100,25 @@ public class Game {
                         }
 
                         if (canMove) {
+                            score--;
                             dadosDoMapa.map()[playerRow][playerCol] = '.';
 
                             playerRow = nextRow;
                             playerCol = nextCol;
-
                             char currentTile = dadosDoMapa.map()[playerRow][playerCol];
+
                             if (Character.isLowerCase(currentTile)) {
                                 inventario.push(currentTile);
                             } else if (currentTile == '$') {
-                                score += 25;
+                                long treasureSeed = seed + playerRow * 1000 + playerCol; 
+                                Random treasureRng = new Random(treasureSeed);
+                                int valorTesouro = treasureRng.nextInt(41) + 10;
+                                score += valorTesouro;
+                                System.out.println("DEBUG: Tesouro coletado! Valor: +" + valorTesouro);
                             } else if (currentTile == 'T') {
                                 score -= 20;
+                                String logMessage = "Armadilha encontrada na posição (" + playerRow + ", " + playerCol + ")";
+                                trapLog.add(logMessage);
                             } else if (currentTile == 'E') {
                                 score += 100;
                                 gameIsRunning = false;
@@ -133,7 +144,6 @@ public class Game {
                     Sorts.ordenarRapido(ranking, 0, ranking.length - 1);
                 }
 
-                // 5. Exibir os 10 melhores do ranking
                 System.out.println("\n--- TOP 10 RANKING ---");
                 int limite = Math.min(ranking.length, 10);
                 for (int i = 0; i < limite; i++) {
@@ -141,6 +151,10 @@ public class Game {
                             (i + 1) + ". " + ranking[i].getNome() + " - " + ranking[i].getPontos() + " pontos");
                 }
                 System.out.println("----------------------");
+
+                System.out.println("\n--- Log de Armadilhas Encontradas ---");
+                trapLog.printList(); 
+                System.out.println("-------------------------------------");
 
                 while (true) {
                     System.out.print("\nDigite um nome para buscar no ranking (ou 'sair' para terminar): ");
