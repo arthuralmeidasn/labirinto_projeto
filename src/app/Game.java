@@ -26,7 +26,7 @@ public class Game {
             String nomeDoJogador = scannerNome.nextLine();
 
             try {
-                MapData dadosDoMapa = MapLoader.load("mapa_teste.txt");
+                MapData dadosDoMapa = MapLoader.load("mapa_labirinto.txt");
 
                 for (int i = 0; i < dadosDoMapa.rows(); i++) {
                     for (int j = 0; j < dadosDoMapa.cols(); j++) {
